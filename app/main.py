@@ -1,6 +1,6 @@
 import os
 from fastapi import FastAPI
-
+from app.database import init_db
 
 app = FastAPI(title="OrderFlow API", version="1.0.0")
 
