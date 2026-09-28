@@ -1,63 +1,63 @@
-name: DevSecOps CI Pipeline 
+name: DevSecOps CI Pipeline
 
 on:  
-  pull_request:    
-    branches: [ main, develop ] 
+  pull_request:
+    branches: [ main, develop ]
     
-jobs:  
-  secret-scan:    
-    name: Secret & Credential Leak Check    
-    runs-on: ubuntu-latest    
-    steps:      
-      - uses: actions/checkout@v4      
-      - name: Run Gitleaks Scan        
-        uses: gitleaks/gitleaks-action@v2        
-        env:          
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+jobs:
+  secret-scan:
+    name: Secret & Credential Leak Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run Gitleaks Scan
+        uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
-  code-quality-and-sast:    
-    name: Lint & SAST Analysis    
-    runs-on: ubuntu-latest    
-    steps:      
-      - uses: actions/checkout@v4      
-      - name: Set up Python        
-        uses: actions/setup-python@v4        
-        with:          
-          python-version: '3.11'      
-      - name: Install Analysis Tools        
-        run: pip install flake8 bandit      
-      - name: Code Style Check        
-        run: flake8 app/ --max-line-length=100      
-      - name: Security Analysis (Bandit)        
-        run: bandit -r app/ -ll  
+  code-quality-and-sast:
+    name: Lint & SAST Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Analysis Tools
+        run: pip install flake8 bandit
+      - name: Code Style Check
+        run: flake8 app/ --max-line-length=100
+      - name: Security Analysis (Bandit)
+        run: bandit -r app/ -ll
       
-  integration-tests:    
-    name: Integration Testing (PostgreSQL)    
-    needs: [code-quality-and-sast]    
-    runs-on: ubuntu-latest    
-    services:      
-      postgres:        
-        image: postgres:15-alpine        
-        env:          
-          POSTGRES_USER: devuser          
-          POSTGRES_PASSWORD: devpassword          
-          POSTGRES_DB: orderdb        
-        ports:          
-          - 5432:5432        
-        options: >          
-          --health-cmd pg_isready          
-          --health-interval 10s          
-          --health-timeout 5s          
-          --health-retries 5    
-    steps:      
-      - uses: actions/checkout@v4      
-      - name: Set up Python        
-        uses: actions/setup-python@v4
-        with:          
-          python-version: '3.11'      
-      - name: Install Dependencies        
+  integration-tests:
+    name: Integration Testing (PostgreSQL)
+    needs: [code-quality-and-sast]
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: devuser
+          POSTGRES_PASSWORD: devpassword
+          POSTGRES_DB: orderdb
+        ports:
+          - 5432:5432
+        options: >
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Dependencies
         run: pip install -r requirements.txt pytest httpx
-      - name: Execute PyTest Integration Suite        
-        env:          
-          DATABASE_URL: postgresql://devuser:devpassword@localhost:5432/orderdb        
+      - name: Execute PyTest Integration Suite
+        env:
+          DATABASE_URL: postgresql://devuser:devpassword@localhost:5432/orderdb
         run: pytest tests/ -v
