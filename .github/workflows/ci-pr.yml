@@ -2,7 +2,7 @@ name: DevSecOps CI Pipeline
 
 on:  
   pull_request:    
-    branches: [ main, develop, 'feature/*' ] 
+    branches: [ main, develop ] 
     
 jobs:  
   secret-scan:    
