@@ -1,5 +1,6 @@
+import os
 from fastapi import FastAPI
-from app.database import init_db
+from app.database import init_db, get_engine
 
 app = FastAPI(title="OrderFlow API", version="1.0.0")
 
@@ -19,5 +20,21 @@ def read_root():
 @app.get("/health")
 def health_check():
     """Health check endpoint."""
-    return {"status": "healthy"}
-    
+    db_status = "connected" if os.getenv("DATABASE_URL") else "disconnected"
+    return {
+        "status": "healthy",
+        "database": db_status,
+        "version": "1.0.0"
+    }
+
+
+@app.get("/api/v1/orders")
+def get_orders():
+    """Get all orders."""
+    return [
+        {
+            "order_id": 101,
+            "item": "Cloud Server",
+            "status": "processed",
+        }
+    ]

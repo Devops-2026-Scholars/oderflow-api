@@ -12,6 +12,11 @@ client = TestClient(app)
 
 
 @pytest.fixture
+def test_health_endpoint_with_postgresql(client, database_url):  # ← Add client parameter
+    response = client.get("/health")
+    ...
+
+
 def database_url():
     database_url = os.getenv("DATABASE_URL")
 

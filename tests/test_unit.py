@@ -6,6 +6,11 @@ from app.main import app
 client = TestClient(app)
 
 
+def test_health_check_without_database(client):  # ← Add client parameter
+    response = client.get("/health")
+    ...
+
+
 def test_health_check_without_database():
     response = client.get("/health")
 
