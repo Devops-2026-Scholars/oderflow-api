@@ -12,3 +12,4 @@ def health_check():
 @app.get("/api/v1/orders")
 def get_orders():
     return [{"order_id": 101, "item": "Cloud Server", "status": "processed"}]
+
