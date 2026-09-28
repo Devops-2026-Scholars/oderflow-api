@@ -1,7 +1,5 @@
 import os
 from fastapi import FastAPI
-from app.database import init_db, get_engine
-from app.database import get_engine  # noqa: F401
 
 
 app = FastAPI(title="OrderFlow API", version="1.0.0")
