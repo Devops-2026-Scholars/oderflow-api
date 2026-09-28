@@ -1,7 +1,8 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI
 import os
 
 app = FastAPI(title="OrderFlow API", version="1.0.0")
+
 
 @app.get("/health")
 def health_check():
