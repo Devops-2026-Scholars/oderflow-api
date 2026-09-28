@@ -1,4 +1,4 @@
-def test_health_check_without_database(monkeypatch):
+def test_health_check_without_database(client, monkeypatch):
     # Temporarily hide the database environment variable
     monkeypatch.delenv("DATABASE_URL", raising=False)
 
