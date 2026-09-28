@@ -3,6 +3,8 @@ name: DevSecOps CI Pipeline
 on:
   pull_request:
     branches: [ main, develop, feature ]
+  push:
+    branches: [ main, develop, feature ]
 
 jobs:
   secret-scan:
