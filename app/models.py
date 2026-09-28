@@ -1,28 +1,18 @@
+from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 
-from sqlalchemy import DateTime, Integer, String, func
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-
-
-class Base(DeclarativeBase):
-    """Base class for all SQLAlchemy models."""
+Base = declarative_base()
 
 
 class Order(Base):
-    """Database model representing an order."""
-
     __tablename__ = "orders"
 
-    order_id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    item: Mapped[str] = mapped_column(String(255), nullable=False)
-    status: Mapped[str] = mapped_column(
-        String(50),
-        nullable=False,
-        default="pending",
-        server_default="pending",
-    )
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        server_default=func.now(),
-    )
+    order_id = Column(Integer, primary_key=True, index=True)
+    item = Column(String(255), nullable=False)
+    status = Column(String(50), default="pending")
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f"<Order(order_id={self.order_id}, item={self.item}, status={self.status})>"

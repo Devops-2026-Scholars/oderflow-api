@@ -1,51 +1,34 @@
 import os
 
-import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import text
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
-from app.database import get_engine
-from app.main import app
+from app.models import Base
 
 
-client = TestClient(app)
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql://devuser:devpassword@localhost:5432/orderdb",
+)
+
+engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
 
-@pytest.fixture
-def database_url():
-    database_url = os.getenv("DATABASE_URL")
-
-    if not database_url:
-        pytest.fail("DATABASE_URL must be configured for integration tests")
-
-    return database_url
+def init_db() -> None:
+    """Create database tables if they do not already exist."""
+    Base.metadata.create_all(bind=engine)
 
 
-def test_postgresql_connection(database_url):
-    engine = get_engine()
-
+def get_db():
+    """Provide a database session to callers."""
+    db = SessionLocal()
     try:
-        with engine.connect() as connection:
-            result = connection.execute(text("SELECT 1"))
-            assert result.scalar() == 1
+        yield db
     finally:
-        engine.dispose()
+        db.close()
 
 
-def test_health_endpoint_with_postgresql(database_url):
-    response = client.get("/health")
-
-    assert response.status_code == 200
-
-    response_data = response.json()
-    assert response_data["status"] == "healthy"
-    assert response_data["database"] == "connected"
-    assert response_data["version"] == "1.0.0"
-
-
-def test_orders_endpoint_integration(database_url):
-    response = client.get("/api/v1/orders")
-
-    assert response.status_code == 200
-    assert isinstance(response.json(), list)
-    assert response.json()[0]["order_id"] == 101
+def get_engine():
+    """Return the SQLAlchemy engine instance."""
+    return engine
