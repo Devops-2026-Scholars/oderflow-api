@@ -1,11 +1,5 @@
 [build]
-  clone_index_thread_limit = 2
-  concurrency = 4
-  max_depth = 0
   verbose = false
 
 [allowlist]
   use_default = true
-  paths = [
-    '''(.*?)(jpg|jpeg|png|gif|bmp|zip|tar|gz|gzip)(.*)'''
-  ]
