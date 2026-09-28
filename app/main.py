@@ -1,7 +1,8 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI
 import os
 
 app = FastAPI(title="OrderFlow API", version="1.0.0")
+
 
 @app.get("/health")
 def health_check():
@@ -12,4 +13,3 @@ def health_check():
 @app.get("/api/v1/orders")
 def get_orders():
     return [{"order_id": 101, "item": "Cloud Server", "status": "processed"}]
-
